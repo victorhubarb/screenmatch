@@ -1,66 +1,86 @@
-# Screenmatch <a name="readme-top"></a>
-![Static Badge](https://img.shields.io/badge/status-completed-green?style=for-the-badge)
+# Screenmatch 🎬
 
-## Introduction
-**Screenmatch** is a Java-based application designed as an online movie platform. This project was developed to practice core Java concepts such as object-oriented programming (OOP), data collections, HTTP API consumption, and exception handling. Through this application, users can explore movies, manage a list of favorite films, and store them in files. The project also emphasizes modular design, encapsulation, and leveraging external APIs like OMDb.
+![Status](https://img.shields.io/badge/status-completed-green?style=for-the-badge)
+![Java](https://img.shields.io/badge/Java-OOP%20%2B%20API-orange?style=for-the-badge&logo=java)
 
-## Table of Contents
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Technologies](#technologies)
-- [Contributors](#contributors)
+A Java application that consumes the OMDb API to search movies and series, evaluate them, calculate total runtime, filter by rating, and save results to JSON — with a full OOP architecture, a custom exception, and an interface.
 
-## Installation
+---
 
-### Prerequisites
-- Java JDK 18+ installed
-- An IDE such as IntelliJ IDEA, Eclipse, or NetBeans installed
+## Overview
 
-### Steps to run
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/victorhubarb/screenmatch.git
-   cd screenmatch
-   ```
-2. Open the project in your preferred IDE:
-- Import the project into your IDE (e.g., using “Open Project” in IntelliJ or “Import Project” in Eclipse).
-- Ensure the project uses the correct Java SDK (JDK 18+).
+Screenmatch was built to practice real-world Java beyond simple exercises. It connects to the OMDb API via `java.net.http.HttpClient`, deserializes JSON responses with GSON, and lets users search for titles, rate them, and save their favorites to a file. The class hierarchy models how a real streaming platform might organize content — `Titulo` as the base, with `Filme` and `Serie` extending it. A `Classificavel` interface enforces a rating contract, and `FiltroRecomendacao` uses it to categorize titles without knowing their concrete type.
 
-3. Run the application:
-- Locate the Main class in the project structure.
-- Right-click on the Main class and select Run.
+The project has three separate entry points, each demonstrating a different stage of complexity.
 
-## Usage
-The application allows users to explore and manage a list of favorite movies through API integration and user input. Users can search for movies using the OMDb API, manage their lists, and save their favorite films to a file.
+---
 
-## Features
-- **Movie Management**:
-  - Search for movies using the OMDb API.
-  - Add movies to a favorites list.
-  - Sort movies based on specific attributes.
-- **Encapsulation and OOP**:
-  - Classes are modeled to encapsulate attributes, ensuring controlled access.
-  - Polymorphism is implemented to adapt methods based on subclasses.
-- **Collections and Data Management**:
-  - Use of ArrayList for managing movies.
-  - Custom ordering and sorting of movies.
-- **HTTP API Consumption**:
-  - Integration with the OMDb API to fetch movie data.
-  - Serialization and deserialization of JSON using the GSON library.
-- **Exception Handling**:
-  - Custom exceptions for error scenarios.
-  - Graceful error handling for API calls and file operations.
-- **File Management**:
-  - Save and read favorite movie lists in a structured file format.
+## Architecture
 
-## Technologies
-- **Java**
-- **OMDb API**
-- **GSON** (for JSON handling)
-- **Java Collections Framework**
-- **Java.net.http** (for API requests)
+```
+br.com.alura.screenmatch/
+├── modelos/
+│   ├── Titulo.java                         # Base class — name, year, duration, ratings, Comparable
+│   ├── Filme.java                          # Extends Titulo, implements Classificavel — adds director
+│   ├── Serie.java                          # Extends Titulo — adds seasons, episodes, minutes per episode
+│   ├── Episodio.java                       # Models individual episodes
+│   └── TituloOmdb.java                     # Record — DTO for deserializing OMDb API responses
+├── calculos/
+│   ├── Classificavel.java                  # Interface — enforces getClassificacao() contract
+│   ├── CalculadoraDeTempo.java             # Accumulates total runtime across a list of titles
+│   └── FiltroRecomendacao.java             # Filters titles by rating using Classificavel interface
+├── exception/
+│   └── ErroDeConversaoDeAnoException.java  # Custom RuntimeException for year parsing errors
+└── main/
+    ├── Main.java                           # Basic entry point — manual title creation and evaluation
+    ├── MainComListas.java                  # Collections entry point — sorting, filtering, ArrayList
+    └── MainComBusca.java                   # Full entry point — OMDb API search + GSON + file save
+```
 
-## Contributors
-- [Victor Barbosa](https://github.com/victorhubarb)
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+### Key Concepts Applied
+
+| Concept | How it shows up |
+|---|---|
+| **Inheritance** | `Filme` and `Serie` both extend `Titulo`; `Serie` overrides `getDuracaoEmMinutos()` to calculate from seasons × episodes × minutes |
+| **Interface** | `Classificavel` enforces `getClassificacao()` — `Filme` implements it; `FiltroRecomendacao` uses it without knowing the concrete type |
+| **Comparable** | `Titulo` implements `Comparable<Titulo>` — enables `Collections.sort()` by title name |
+| **Custom Exception** | `ErroDeConversaoDeAnoException` is thrown when the OMDb year field has more than 4 characters |
+| **HTTP API** | `HttpClient` + `HttpRequest` from `java.net.http` — no external library needed |
+| **GSON** | `GsonBuilder` with `UPPER_CAMEL_CASE` naming policy deserializes OMDb JSON into `TituloOmdb` record |
+| **Java Record** | `TituloOmdb` is a record — immutable DTO with concise syntax |
+| **File I/O** | `MainComBusca` saves the search results list to `filmes.json` using `FileWriter` |
+| **Collections** | `ArrayList<Titulo>` with `Collections.sort()`, stream filtering, and lambda expressions |
+
+---
+
+## How to Run
+
+**Prerequisites:** Java 18+ · IntelliJ IDEA or Eclipse · GSON library on classpath · OMDb API key (free at [omdbapi.com](https://www.omdbapi.com/))
+
+```bash
+git clone https://github.com/victorhubarb/screenmatch.git
+cd screenmatch
+```
+
+Open in your IDE and run one of the three Main classes:
+
+- **`Main.java`** — creates titles manually and tests evaluation logic
+- **`MainComListas.java`** — works with collections, sorting, and filtering
+- **`MainComBusca.java`** — searches OMDb API, saves results to `filmes.json`
+
+Add your OMDb API key in the URL string inside `MainComBusca.java` before running.
+
+---
+
+## What I'd Improve Next
+
+- Move the API key to an environment variable — hardcoding it is a known limitation
+- Add a proper CLI menu so the user can switch between modes without changing the entry point
+- Expand `Serie` to fetch season/episode data from the OMDb API instead of hardcoded values
+
+---
+
+## Author
+
+**Victor Hugo Barbosa**
+[GitHub](https://github.com/victorhubarb) · [LinkedIn](https://www.linkedin.com/in/victorhbarbosa/)
