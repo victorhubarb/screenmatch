@@ -3,7 +3,7 @@
 ![Status](https://img.shields.io/badge/status-completed-green?style=for-the-badge)
 ![Java](https://img.shields.io/badge/Java-OOP%20%2B%20API-orange?style=for-the-badge&logo=java)
 
-A Java application that consumes the OMDb API to search movies and series, evaluate them, calculate total runtime, filter by rating, and save results to JSON — with a full OOP architecture, a custom exception, and an interface.
+A Java application that consumes the OMDb API to search movies and tv shows, evaluate them, calculate total runtime, filter by rating, and save results to JSON — with a full OOP architecture, a custom exception, and an interface.
 
 ---
 
