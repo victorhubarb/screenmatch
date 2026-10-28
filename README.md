@@ -2,6 +2,8 @@
 
 A Java console program that searches movies and series on the [OMDb API](https://www.omdbapi.com/), turns the response into its own `Titulo` model, and saves what you searched to `filmes.json`. Around it there is a small model of movies, series and episodes that practices inheritance, interfaces and collections.
 
+> Built as hands-on practice while following an Alura course.
+
 ## What's inside
 
 There are three entry points in `main/`, going from simple to complete:
@@ -29,6 +31,12 @@ javac -cp gson-2.10.1.jar -d out $(find src -name "*.java")
 java -cp "out:gson-2.10.1.jar" br.com.alura.screenmatch.main.MainComBusca   # ; instead of : on Windows
 ```
 
+`MainComBusca` needs a free OMDb key ([get one here](https://www.omdbapi.com/apikey.aspx)) in the `OMDB_API_KEY` environment variable:
+
+```bash
+export OMDB_API_KEY=your-key     # on Windows (cmd): set OMDB_API_KEY=your-key
+```
+
 Swap `MainComBusca` for `Main` or `MainComListas` to run the other two; those need no network.
 
 ## Project structure
@@ -44,7 +52,7 @@ filmes.json       Sample output from a search session
 
 ## Known gaps
 
-- **The OMDb API key is hardcoded in `MainComBusca.java`** and is in the git history. It is a free key and should be revoked, and the next version will read it from an environment variable.
+- The key is now read from `OMDB_API_KEY`, but an old free key is still visible in the git history. It no longer works.
 - A title that OMDb does not find comes back with null fields and the program fails on it, because only some parse errors are caught.
 - Runtime is read as the first two characters of the OMDb string, so a 100-minute movie is stored as 10.
 - The title is not URL-encoded beyond replacing spaces.
